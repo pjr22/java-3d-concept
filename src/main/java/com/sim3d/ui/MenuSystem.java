@@ -1,11 +1,14 @@
 package com.sim3d.ui;
 
+import com.sim3d.graphics.MenuRenderer;
 import java.util.List;
 
 public class MenuSystem {
     private boolean menuVisible = false;
     private int selectedOption = 0;
     private final List<String> menuOptions = List.of("Resume", "Exit");
+    private MenuRenderer menuRenderer;
+    private boolean initialized = false;
 
     public void toggle() {
         menuVisible = !menuVisible;
@@ -55,19 +58,34 @@ public class MenuSystem {
         return menuOptions;
     }
 
-    public void render() {
-        if (!menuVisible) {
+    public void initialize() {
+        if (!initialized) {
+            menuRenderer = new MenuRenderer();
+            initialized = true;
+        }
+    }
+    
+    public void render(int windowWidth, int windowHeight) {
+        if (!menuVisible || !initialized) {
             return;
         }
 
-        System.out.println("\n=== MENU ===");
-        for (int i = 0; i < menuOptions.size(); i++) {
-            if (i == selectedOption) {
-                System.out.println("> " + menuOptions.get(i) + " <");
-            } else {
-                System.out.println("  " + menuOptions.get(i));
-            }
+        // Render menu background
+        menuRenderer.renderMenuBackground(windowWidth, windowHeight);
+        
+        // Render menu panel
+        menuRenderer.renderMenuPanel(windowWidth, windowHeight);
+        
+        // Render menu title
+        menuRenderer.renderMenuTitle("PAUSED", windowWidth, windowHeight);
+        
+        // Render menu options
+        menuRenderer.renderMenuOptions(menuOptions, selectedOption, windowWidth, windowHeight);
+    }
+    
+    public void cleanup() {
+        if (menuRenderer != null) {
+            menuRenderer.cleanup();
         }
-        System.out.println("============\n");
     }
 }

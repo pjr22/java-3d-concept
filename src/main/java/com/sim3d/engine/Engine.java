@@ -45,6 +45,7 @@ public class Engine {
         mouseInput.init(window.getWindowHandle());
 
         menuSystem = new MenuSystem();
+        menuSystem.initialize();
 
         WorldLoader worldLoader = new WorldLoader();
         try {
@@ -159,7 +160,7 @@ public class Engine {
         }
 
         if (menuSystem.isVisible()) {
-            menuSystem.render();
+            menuSystem.render(window.getWidth(), window.getHeight());
         }
     }
 
@@ -172,6 +173,9 @@ public class Engine {
 
         if (renderer != null) {
             renderer.cleanup();
+        }
+        if (menuSystem != null) {
+            menuSystem.cleanup();
         }
         if (window != null) {
             window.cleanup();
