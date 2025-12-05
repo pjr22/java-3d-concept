@@ -8,6 +8,7 @@ A cross-platform 3D simulation/game engine implemented in Java 21, featuring JSO
 - [Architecture Overview](#architecture-overview)
 - [Project Structure](#project-structure)
 - [Core Concepts](#core-concepts)
+- [Configuration](#configuration)
 - [JSON Configuration](#json-configuration)
 - [Building and Running](#building-and-running)
 - [Controls](#controls)
@@ -98,6 +99,7 @@ java_3d_concept/
 │       │           ├── Main.java                    # Application entry point
 │       │           ├── engine/
 │       │           │   ├── Engine.java              # Main game loop
+│       │           │   ├── Settings.java            # Application settings management
 │       │           │   ├── Window.java              # GLFW window management
 │       │           │   └── Timer.java               # Frame timing
 │       │           ├── graphics/
@@ -134,6 +136,8 @@ java_3d_concept/
 │       │               ├── MenuSystem.java          # Menu management
 │       │               └── PauseMenu.java           # ESC pause menu
 │       └── resources/
+│           ├── settings.json                      # Application configuration
+│           ├── logback.xml                       # Logging configuration
 │           ├── shaders/
 │           │   ├── vertex.glsl                      # Vertex shader
 │           │   └── fragment.glsl                    # Fragment shader
@@ -151,6 +155,54 @@ java_3d_concept/
 └── docs/
     └── json-schema.md                               # JSON schema documentation
 ```
+
+## Configuration
+
+The application uses two main configuration files:
+
+### Application Settings (settings.json)
+
+The `settings.json` file contains application-wide configuration that can be customized by users:
+
+```json
+{
+  "window": {
+    "fullscreen": false,
+    "width": 1280,
+    "height": 720
+  },
+  "logLevel": "info"
+}
+```
+
+#### Settings Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `window.fullscreen` | boolean | false | Start application in fullscreen mode |
+| `window.width` | integer | 1280 | Window width in pixels (when not fullscreen) |
+| `window.height` | integer | 720 | Window height in pixels (when not fullscreen) |
+| `logLevel` | string | "info" | Logging level: "trace", "debug", "info", "warn", "error" |
+
+#### Logging Levels
+
+- **trace**: Most verbose logging, includes all trace messages
+- **debug**: Debug information useful for development (includes debug messages)
+- **info**: General information about application operation (default)
+- **warn**: Warning messages for potential issues
+- **error**: Error messages only
+
+The application first loads default settings from `src/main/resources/settings.json`, then overrides them with user settings from the root `settings.json` file if it exists.
+
+### Logging Configuration (logback.xml)
+
+The `logback.xml` file configures the logging framework. It uses the `log.level` property from settings to control the logging level for the `com.sim3d` package:
+
+```xml
+<logger name="com.sim3d" level="${log.level:-INFO}" />
+```
+
+This allows dynamic configuration of logging levels without modifying the logging configuration file.
 
 ## Core Concepts
 
