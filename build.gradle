@@ -1,0 +1,121 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.sim3d'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+// LWJGL configuration
+def lwjglVersion = '3.3.3'
+def jomlVersion = '1.10.5'
+
+// Detect current platform for native libraries
+def os = org.gradle.internal.os.OperatingSystem.current()
+def arch = System.getProperty("os.arch")
+
+def lwjglNatives
+if (os.isWindows()) {
+    lwjglNatives = arch.contains("aarch64") || arch.contains("arm") ? "natives-windows-arm64" : "natives-windows"
+} else if (os.isMacOsX()) {
+    lwjglNatives = arch.contains("aarch64") || arch.startsWith("arm") ? "natives-macos-arm64" : "natives-macos"
+} else if (os.isLinux()) {
+    if (arch.contains("aarch64") || arch.contains("arm64")) {
+        lwjglNatives = "natives-linux-arm64"
+    } else if (arch.contains("arm")) {
+        lwjglNatives = "natives-linux-arm32"
+    } else {
+        lwjglNatives = "natives-linux"
+    }
+} else {
+    lwjglNatives = "natives-linux"
+}
+
+dependencies {
+    // LWJGL BOM for version management
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    
+    // LWJGL core
+    implementation "org.lwjgl:lwjgl"
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    
+    // GLFW - window and input
+    implementation "org.lwjgl:lwjgl-glfw"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    
+    // OpenGL bindings
+    implementation "org.lwjgl:lwjgl-opengl"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    
+    // STB - image loading
+    implementation "org.lwjgl:lwjgl-stb"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    
+    // JOML - math library
+    implementation "org.joml:joml:$jomlVersion"
+    
+    // Gson - JSON parsing
+    implementation 'com.google.code.gson:gson:2.10.1'
+    
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'com.sim3d.Main'
+    
+    // JVM arguments for LWJGL
+    applicationDefaultJvmArgs = [
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        '-XstartOnFirstThread' // Required for macOS
+    ]
+}
+
+// Platform-specific JVM args
+tasks.named('run') {
+    doFirst {
+        if (!org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+            jvmArgs = jvmArgs.findAll { it != '-XstartOnFirstThread' }
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'com.sim3d.Main',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
+        )
+    }
+    
+    // Include all dependencies in the JAR
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

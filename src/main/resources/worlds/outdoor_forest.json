@@ -1,0 +1,205 @@
+{
+  "id": "outdoor_forest",
+  "type": "outdoor",
+  "name": "Forest Clearing",
+  "bounds": {
+    "width": 100,
+    "height": 50,
+    "depth": 100
+  },
+  "spawnPoint": { "x": 0, "y": 1, "z": 0 },
+  "spawnPoints": {
+    "default": { "x": 0, "y": 1, "z": 0 },
+    "cabin_exit": { "x": 18, "y": 1, "z": 18 }
+  },
+  "groundColor": { "r": 0.3, "g": 0.5, "b": 0.2 },
+  "skyColor": { "r": 0.5, "g": 0.7, "b": 1.0 },
+  "objects": [
+    {
+      "id": "tree_01",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Oak Tree",
+      "model": "pyramid",
+      "modelPath": "models/tree.obj",
+      "transform": {
+        "position": { "x": -15, "y": 0, "z": 10 },
+        "scale": { "x": 1, "y": 1, "z": 1 }
+      },
+      "color": { "r": 0.2, "g": 0.6, "b": 0.2 }
+    },
+    {
+      "id": "tree_02",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Pine Tree",
+      "model": "pyramid",
+      "modelPath": "models/tree.obj",
+      "transform": {
+        "position": { "x": 25, "y": 0, "z": -5 },
+        "scale": { "x": 1.2, "y": 1.5, "z": 1.2 }
+      },
+      "color": { "r": 0.1, "g": 0.5, "b": 0.15 }
+    },
+    {
+      "id": "tree_03",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Birch Tree",
+      "model": "pyramid",
+      "modelPath": "models/tree.obj",
+      "transform": {
+        "position": { "x": -30, "y": 0, "z": -20 },
+        "scale": { "x": 0.8, "y": 1.2, "z": 0.8 }
+      },
+      "color": { "r": 0.3, "g": 0.7, "b": 0.3 }
+    },
+    {
+      "id": "tree_04",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Oak Tree",
+      "model": "pyramid",
+      "modelPath": "models/tree.obj",
+      "transform": {
+        "position": { "x": 35, "y": 0, "z": 30 },
+        "scale": { "x": 1.1, "y": 1.3, "z": 1.1 }
+      },
+      "color": { "r": 0.2, "g": 0.55, "b": 0.2 }
+    },
+    {
+      "id": "tree_05",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Maple Tree",
+      "model": "pyramid",
+      "modelPath": "models/tree.obj",
+      "transform": {
+        "position": { "x": -10, "y": 0, "z": 35 },
+        "scale": { "x": 1, "y": 1.1, "z": 1 }
+      },
+      "color": { "r": 0.25, "g": 0.6, "b": 0.25 }
+    },
+    {
+      "id": "rock_01",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Boulder",
+      "model": "sphere",
+      "modelPath": "models/rock.obj",
+      "transform": {
+        "position": { "x": 5, "y": 0, "z": -15 },
+        "scale": { "x": 2, "y": 1.5, "z": 2 }
+      },
+      "color": { "r": 0.5, "g": 0.5, "b": 0.5 }
+    },
+    {
+      "id": "rock_02",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Stone",
+      "model": "sphere",
+      "modelPath": "models/rock.obj",
+      "transform": {
+        "position": { "x": -20, "y": 0, "z": 5 },
+        "scale": { "x": 1, "y": 0.8, "z": 1.2 }
+      },
+      "color": { "r": 0.6, "g": 0.55, "b": 0.5 }
+    },
+    {
+      "id": "rock_03",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Pebble Cluster",
+      "model": "sphere",
+      "modelPath": "models/rock.obj",
+      "transform": {
+        "position": { "x": 12, "y": 0, "z": 25 },
+        "scale": { "x": 0.5, "y": 0.4, "z": 0.6 }
+      },
+      "color": { "r": 0.45, "g": 0.45, "b": 0.45 }
+    },
+    {
+      "id": "rock_04",
+      "type": "static",
+      "subtype": "natural_feature",
+      "name": "Mossy Rock",
+      "model": "sphere",
+      "modelPath": "models/rock.obj",
+      "transform": {
+        "position": { "x": -35, "y": 0, "z": -10 },
+        "scale": { "x": 1.5, "y": 1, "z": 1.3 }
+      },
+      "color": { "r": 0.4, "g": 0.5, "b": 0.4 }
+    },
+    {
+      "id": "rabbit_01",
+      "type": "actor",
+      "subtype": "creature",
+      "name": "Cottontail Rabbit",
+      "model": "sphere",
+      "modelPath": "models/rabbit.obj",
+      "transform": {
+        "position": { "x": 8, "y": 0.5, "z": 12 },
+        "scale": { "x": 0.5, "y": 0.5, "z": 0.5 }
+      },
+      "color": { "r": 0.8, "g": 0.7, "b": 0.6 }
+    },
+    {
+      "id": "rabbit_02",
+      "type": "actor",
+      "subtype": "creature",
+      "name": "Brown Rabbit",
+      "model": "sphere",
+      "modelPath": "models/rabbit.obj",
+      "transform": {
+        "position": { "x": -12, "y": 0.5, "z": -8 },
+        "scale": { "x": 0.6, "y": 0.6, "z": 0.6 }
+      },
+      "color": { "r": 0.6, "g": 0.4, "b": 0.3 }
+    },
+    {
+      "id": "rabbit_03",
+      "type": "actor",
+      "subtype": "creature",
+      "name": "White Rabbit",
+      "model": "sphere",
+      "modelPath": "models/rabbit.obj",
+      "transform": {
+        "position": { "x": 20, "y": 0.5, "z": -18 },
+        "scale": { "x": 0.4, "y": 0.4, "z": 0.4 }
+      },
+      "color": { "r": 0.95, "g": 0.95, "b": 0.95 }
+    },
+    {
+      "id": "cabin",
+      "type": "static",
+      "subtype": "structure",
+      "name": "Wooden Cabin",
+      "model": "cube",
+      "modelPath": "models/cabin.obj",
+      "transform": {
+        "position": { "x": 20, "y": 0, "z": 20 },
+        "scale": { "x": 3, "y": 3, "z": 3 }
+      },
+      "color": { "r": 0.55, "g": 0.35, "b": 0.2 }
+    }
+  ],
+  "portals": [
+    {
+      "id": "portal_cabin_entrance",
+      "name": "Cabin Door",
+      "targetEnvironmentId": "indoor_cabin",
+      "targetSpawnPoint": "entrance",
+      "transform": {
+        "position": { "x": 20, "y": 1, "z": 10 },
+        "rotation": { "x": 0, "y": 0, "z": 0 }
+      },
+      "triggerSize": {
+        "width": 2,
+        "height": 3,
+        "depth": 1
+      }
+    }
+  ]
+}

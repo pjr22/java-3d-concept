@@ -1,0 +1,111 @@
+{
+  "id": "indoor_cabin",
+  "type": "indoor",
+  "name": "Cozy Cabin Interior",
+  "bounds": {
+    "width": 15,
+    "height": 4,
+    "depth": 20
+  },
+  "spawnPoint": { "x": 7.5, "y": 1, "z": 1 },
+  "spawnPoints": {
+    "entrance": { "x": 7.5, "y": 1, "z": 1 },
+    "exit": { "x": 7.5, "y": 1, "z": 1 }
+  },
+  "groundColor": { "r": 0.6, "g": 0.4, "b": 0.2 },
+  "skyColor": { "r": 0.2, "g": 0.2, "b": 0.25 },
+  "objects": [
+    {
+      "id": "dining_table",
+      "type": "static",
+      "subtype": "furniture",
+      "name": "Dining Table",
+      "model": "cube",
+      "modelPath": "models/table.obj",
+      "transform": {
+        "position": { "x": 4, "y": 0, "z": 8 },
+        "scale": { "x": 1.5, "y": 1, "z": 1 }
+      },
+      "color": { "r": 0.5, "g": 0.3, "b": 0.15 }
+    },
+    {
+      "id": "chair_01",
+      "type": "static",
+      "subtype": "furniture",
+      "name": "Wooden Chair",
+      "model": "cube",
+      "modelPath": "models/chair.obj",
+      "transform": {
+        "position": { "x": 3, "y": 0, "z": 6.5 },
+        "scale": { "x": 1, "y": 1, "z": 1 }
+      },
+      "color": { "r": 0.45, "g": 0.28, "b": 0.12 }
+    },
+    {
+      "id": "chair_02",
+      "type": "static",
+      "subtype": "furniture",
+      "name": "Wooden Chair",
+      "model": "cube",
+      "modelPath": "models/chair.obj",
+      "transform": {
+        "position": { "x": 5, "y": 0, "z": 6.5 },
+        "scale": { "x": 1, "y": 1, "z": 1 }
+      },
+      "color": { "r": 0.45, "g": 0.28, "b": 0.12 }
+    },
+    {
+      "id": "bed",
+      "type": "static",
+      "subtype": "furniture",
+      "name": "Bed",
+      "model": "cube",
+      "transform": {
+        "position": { "x": 12, "y": 0, "z": 16 },
+        "scale": { "x": 2.5, "y": 0.8, "z": 3 }
+      },
+      "color": { "r": 0.8, "g": 0.75, "b": 0.7 }
+    },
+    {
+      "id": "closet",
+      "type": "container",
+      "subtype": "furniture",
+      "name": "Wardrobe Closet",
+      "model": "cube",
+      "transform": {
+        "position": { "x": 1, "y": 0, "z": 16 },
+        "scale": { "x": 1.5, "y": 2.5, "z": 1 }
+      },
+      "color": { "r": 0.4, "g": 0.25, "b": 0.1 }
+    },
+    {
+      "id": "storage_bin",
+      "type": "container",
+      "subtype": "furniture",
+      "name": "Storage Chest",
+      "model": "cube",
+      "transform": {
+        "position": { "x": 12, "y": 0, "z": 12 },
+        "scale": { "x": 1.2, "y": 0.8, "z": 0.8 }
+      },
+      "color": { "r": 0.55, "g": 0.35, "b": 0.18 }
+    }
+  ],
+  "portals": [
+    {
+      "id": "portal_cabin_exit",
+      "name": "Cabin Door",
+      "targetEnvironmentId": "outdoor_forest",
+      "targetSpawnPoint": "cabin_exit",
+      "transform": {
+        "position": { "x": 7.5, "y": 1, "z": 0 },
+        "rotation": { "x": 0, "y": 180, "z": 0 }
+      },
+      "triggerSize": {
+        "width": 2,
+        "height": 3,
+        "depth": 1
+      }
+    }
+  ]
+}
