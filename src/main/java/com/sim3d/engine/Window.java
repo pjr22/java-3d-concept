@@ -15,6 +15,7 @@ public class Window {
     private int height = 720;
     private String title;
     private long windowHandle;
+    private boolean fullscreen = false;
 
     public Window(String title) {
         this.title = title;
@@ -24,6 +25,13 @@ public class Window {
         this.title = title;
         this.width = width;
         this.height = height;
+    }
+
+    public Window(String title, int width, int height, boolean fullscreen) {
+        this.title = title;
+        this.width = width;
+        this.height = height;
+        this.fullscreen = fullscreen;
     }
 
     public void init() {
@@ -41,7 +49,20 @@ public class Window {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-        windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
+        long monitor = fullscreen ? glfwGetPrimaryMonitor() : NULL;
+        if (fullscreen) {
+            // Get the video mode of the primary monitor
+            GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            if (vidMode != null) {
+                width = vidMode.width();
+                height = vidMode.height();
+                // Update the window dimensions
+                this.width = width;
+                this.height = height;
+            }
+        }
+        
+        windowHandle = glfwCreateWindow(width, height, title, monitor, NULL);
         if (windowHandle == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -51,17 +72,20 @@ public class Window {
             this.height = h;
         });
 
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
-            glfwGetWindowSize(windowHandle, pWidth, pHeight);
-            GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            if (vidMode != null) {
-                glfwSetWindowPos(
-                    windowHandle,
-                    (vidMode.width() - pWidth.get(0)) / 2,
-                    (vidMode.height() - pHeight.get(0)) / 2
-                );
+        // Center window only if not fullscreen
+        if (!fullscreen) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                IntBuffer pWidth = stack.mallocInt(1);
+                IntBuffer pHeight = stack.mallocInt(1);
+                glfwGetWindowSize(windowHandle, pWidth, pHeight);
+                GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+                if (vidMode != null) {
+                    glfwSetWindowPos(
+                        windowHandle,
+                        (vidMode.width() - pWidth.get(0)) / 2,
+                        (vidMode.height() - pHeight.get(0)) / 2
+                    );
+                }
             }
         }
 
@@ -103,5 +127,13 @@ public class Window {
 
     public long getWindowHandle() {
         return windowHandle;
+    }
+
+    public boolean isFullscreen() {
+        return fullscreen;
+    }
+
+    public void setFullscreen(boolean fullscreen) {
+        this.fullscreen = fullscreen;
     }
 }

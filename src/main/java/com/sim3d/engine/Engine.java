@@ -31,7 +31,8 @@ public class Engine {
     public void init() {
         logger.info("Initializing engine...");
 
-        window = new Window("3D Simulation Engine", 1280, 720);
+        Settings settings = Settings.getInstance();
+        window = new Window("3D Simulation Engine", settings.getWindowWidth(), settings.getWindowHeight(), settings.isFullscreen());
         window.init();
 
         renderer = new Renderer();
