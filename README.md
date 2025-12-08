@@ -346,10 +346,31 @@ Models are specified in JSON using the `modelPath` field:
 The OBJ loader supports:
 - Vertex positions (`v x y z`)
 - Vertex normals (`vn x y z`)
-- Texture coordinates (`vt u v`) - parsed but not yet rendered
-- Triangular and polygon faces (`f v1//vn1 v2//vn2 v3//vn3`)
+- Texture coordinates (`vt u v`)
+- Triangular and polygon faces (`f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3`)
 - Multiple objects/groups (`o name`, `g name`)
 - Negative indices (relative to end of list)
+
+### Textures
+
+The engine supports PNG and JPG textures applied via UV mapping. To add a texture to an object:
+
+```json
+{
+  "id": "my_textured_object",
+  "modelPath": "assets/mymodel/model.obj",
+  "texturePath": "assets/mymodel/texture.png",
+  "color": { "r": 1.0, "g": 1.0, "b": 1.0 }
+}
+```
+
+**Important requirements:**
+- OBJ files must include texture coordinates (`vt` lines) and faces must reference them (`f v/vt/vn`)
+- Use **triangulated meshes** for best results (not control meshes or subdivision surfaces)
+- Texture images should be power-of-2 dimensions (512×512, 1024×1024, etc.)
+- Keep color white `(1, 1, 1)` for unmodified texture colors
+
+For detailed guidance, see [docs/texture-best-practices.md](docs/texture-best-practices.md).
 
 ### Included Models
 
@@ -428,7 +449,7 @@ LWJGL 3 provides native binaries for all supported platforms. The Gradle build a
 
 ## Future Enhancements
 
-- [ ] Texture loading and mapping
+- [x] Texture loading and mapping
 - [ ] Collision detection
 - [ ] Actor AI and pathfinding
 - [ ] Sound system

@@ -68,6 +68,7 @@ public class Renderer {
         shaderProgram.setUniform("view", viewMatrix);
         shaderProgram.setUniform("lightDirection", lightDirection);
         shaderProgram.setUniform("ambientStrength", 0.3f);
+        shaderProgram.setUniform("textureSampler", 0);
 
         renderGroundPlane(environment);
 
@@ -123,7 +124,23 @@ public class Renderer {
         Model model = assetManager.getModel(modelPath);
         
         if (model != null) {
-            model.render();
+            // Handle texture binding
+            boolean useTexture = false;
+            Texture texture = null;
+            if (model.hasTexture()) {
+                texture = model.getTexture();
+                if (texture != null) {
+                    texture.bind(0);
+                    useTexture = true;
+                }
+            }
+            
+            shaderProgram.setUniform("useTexture", useTexture);
+            model.render(useTexture);
+            
+            if (useTexture && texture != null) {
+                texture.unbind();
+            }
         } else {
             renderPrimitive(obj);
         }
@@ -138,6 +155,8 @@ public class Renderer {
         }
 
         if (mesh != null) {
+            // Primitives don't use textures and don't have texture coordinates
+            shaderProgram.setUniform("useTexture", false);
             mesh.render();
         }
     }
@@ -148,9 +167,12 @@ public class Renderer {
         for (GameObject obj : environment.getObjects()) {
             if (obj.hasCustomModel()) {
                 String modelPath = obj.getModelPath();
+                String texturePath = obj.getTexturePath();
+                
                 if (!assetManager.hasModel(modelPath)) {
-                    assetManager.getModel(modelPath);
+                    assetManager.loadModel(modelPath, texturePath);
                 }
+                // Note: Texture is loaded automatically by loadModel() when texturePath is provided
             }
         }
     }

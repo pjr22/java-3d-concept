@@ -60,6 +60,8 @@ public class Engine {
         Environment currentEnv = world.getCurrentEnvironment();
         if (currentEnv != null) {
             player.setPosition(currentEnv.getSpawnPoint());
+            // Preload models and textures for the current environment
+            renderer.preloadModels(currentEnv);
         }
 
         mouseInput.captureMouse();

@@ -9,6 +9,7 @@ public abstract class GameObject {
     protected Vector3f color;
     protected String modelType;
     protected String modelPath;
+    protected String texturePath;
 
     public GameObject(String id, String name) {
         this.id = id;
@@ -17,6 +18,7 @@ public abstract class GameObject {
         this.color = new Vector3f(1, 1, 1);
         this.modelType = "cube";
         this.modelPath = null;
+        this.texturePath = null;
     }
 
     public abstract void update(float deltaTime);
@@ -78,5 +80,17 @@ public abstract class GameObject {
 
     public boolean hasCustomModel() {
         return modelPath != null && !modelPath.isEmpty();
+    }
+
+    public String getTexturePath() {
+        return texturePath;
+    }
+
+    public void setTexturePath(String texturePath) {
+        this.texturePath = texturePath;
+    }
+
+    public boolean hasTexture() {
+        return texturePath != null && !texturePath.isEmpty();
     }
 }

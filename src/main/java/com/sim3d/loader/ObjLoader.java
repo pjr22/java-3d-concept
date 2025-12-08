@@ -91,7 +91,7 @@ public final class ObjLoader {
                             ).normalize());
                         }
                     }
-                    case "f" -> parseFace(tokens, positions, normals, currentMesh, lineNumber);
+                    case "f" -> parseFace(tokens, positions, texCoords, normals, currentMesh, lineNumber);
                     case "o", "g" -> {
                         if (tokens.length >= 2) {
                             if (!currentMesh.faces.isEmpty()) {
@@ -133,9 +133,10 @@ public final class ObjLoader {
         Vector3f boundingMax = new Vector3f(-Float.MAX_VALUE);
 
         for (MeshData meshData : meshDataList) {
-            float[] vertices = buildVertexArray(meshData, positions, normals, boundingMin, boundingMax);
+            boolean hasTexCoords = meshData.hasTextureCoords;
+            float[] vertices = buildVertexArray(meshData, positions, texCoords, normals, boundingMin, boundingMax);
             int[] indices = buildIndexArray(meshData.faces.size() * 3);
-            meshes.add(new Mesh(vertices, indices));
+            meshes.add(new Mesh(vertices, indices, hasTexCoords));
         }
 
         String modelName = extractModelName(sourcePath);
@@ -144,7 +145,7 @@ public final class ObjLoader {
         return new Model(modelName, meshes, boundingMin, boundingMax);
     }
 
-    private static void parseFace(String[] tokens, List<Vector3f> positions, List<Vector3f> normals,
+    private static void parseFace(String[] tokens, List<Vector3f> positions, List<float[]> texCoords, List<Vector3f> normals,
                                    MeshData meshData, int lineNumber) {
         if (tokens.length < 4) {
             logger.warn("Face with less than 3 vertices at line {}", lineNumber);
@@ -153,9 +154,13 @@ public final class ObjLoader {
 
         List<int[]> faceVertices = new ArrayList<>();
         for (int i = 1; i < tokens.length; i++) {
-            int[] indices = parseFaceVertex(tokens[i], positions.size(), normals.size());
+            int[] indices = parseFaceVertex(tokens[i], positions.size(), texCoords.size(), normals.size());
             if (indices != null) {
                 faceVertices.add(indices);
+                // Check if this vertex has texture coordinates
+                if (indices[1] >= 0) {
+                    meshData.hasTextureCoords = true;
+                }
             }
         }
 
@@ -170,7 +175,7 @@ public final class ObjLoader {
         }
     }
 
-    private static int[] parseFaceVertex(String token, int posCount, int normCount) {
+    private static int[] parseFaceVertex(String token, int posCount, int texCount, int normCount) {
         String[] parts = token.split("/", -1);
         int[] result = new int[] { -1, -1, -1 };
 
@@ -198,7 +203,7 @@ public final class ObjLoader {
         return index - 1;
     }
 
-    private static float[] buildVertexArray(MeshData meshData, List<Vector3f> positions,
+    private static float[] buildVertexArray(MeshData meshData, List<Vector3f> positions, List<float[]> texCoords,
                                              List<Vector3f> normals, Vector3f boundingMin, Vector3f boundingMax) {
         List<Float> vertexList = new ArrayList<>();
 
@@ -212,9 +217,9 @@ public final class ObjLoader {
                 );
             }
 
-            addVertex(vertexList, positions, normals, face.v1, faceNormal, boundingMin, boundingMax);
-            addVertex(vertexList, positions, normals, face.v2, faceNormal, boundingMin, boundingMax);
-            addVertex(vertexList, positions, normals, face.v3, faceNormal, boundingMin, boundingMax);
+            addVertex(vertexList, positions, texCoords, normals, face.v1, faceNormal, boundingMin, boundingMax, meshData.hasTextureCoords);
+            addVertex(vertexList, positions, texCoords, normals, face.v2, faceNormal, boundingMin, boundingMax, meshData.hasTextureCoords);
+            addVertex(vertexList, positions, texCoords, normals, face.v3, faceNormal, boundingMin, boundingMax, meshData.hasTextureCoords);
         }
 
         float[] result = new float[vertexList.size()];
@@ -224,21 +229,24 @@ public final class ObjLoader {
         return result;
     }
 
-    private static void addVertex(List<Float> vertexList, List<Vector3f> positions,
+    private static void addVertex(List<Float> vertexList, List<Vector3f> positions, List<float[]> texCoords,
                                    List<Vector3f> normals, int[] indices, Vector3f faceNormal,
-                                   Vector3f boundingMin, Vector3f boundingMax) {
+                                   Vector3f boundingMin, Vector3f boundingMax, boolean hasTextureCoords) {
         Vector3f pos = positions.get(indices[0]);
         boundingMin.min(pos);
         boundingMax.max(pos);
 
+        // Position (3 floats)
         vertexList.add(pos.x);
         vertexList.add(pos.y);
         vertexList.add(pos.z);
 
+        // Color (3 floats)
         vertexList.add(1.0f);
         vertexList.add(1.0f);
         vertexList.add(1.0f);
 
+        // Normal (3 floats)
         Vector3f normal;
         if (indices[2] >= 0 && indices[2] < normals.size()) {
             normal = normals.get(indices[2]);
@@ -247,10 +255,20 @@ public final class ObjLoader {
         } else {
             normal = new Vector3f(0, 1, 0);
         }
-
         vertexList.add(normal.x);
         vertexList.add(normal.y);
         vertexList.add(normal.z);
+
+        // Texture coordinates (2 floats) - only add if this mesh has texture coordinates
+        if (hasTextureCoords && indices[1] >= 0 && indices[1] < texCoords.size()) {
+            float[] texCoord = texCoords.get(indices[1]);
+            vertexList.add(texCoord[0]);
+            vertexList.add(texCoord[1]);
+        } else if (hasTextureCoords) {
+            // Default texture coordinates only for meshes that are supposed to have them
+            vertexList.add(0.0f);
+            vertexList.add(0.0f);
+        }
     }
 
     private static Vector3f calculateFaceNormal(Vector3f v1, Vector3f v2, Vector3f v3) {
@@ -277,6 +295,7 @@ public final class ObjLoader {
     private static class MeshData {
         final String name;
         final List<Face> faces = new ArrayList<>();
+        boolean hasTextureCoords = false;
 
         MeshData(String name) {
             this.name = name;

@@ -107,6 +107,7 @@ public class EnvironmentLoader {
 
         Transform transform = new Transform(position, rotation, scale);
         String modelPath = data.modelPath;
+        String texturePath = data.texturePath;
 
         GameObject gameObject = switch (type.toLowerCase()) {
             case "actor" -> new Actor(id, name, subtype, model, transform, color);
@@ -116,6 +117,10 @@ public class EnvironmentLoader {
 
         if (modelPath != null && !modelPath.isEmpty()) {
             gameObject.setModelPath(modelPath);
+        }
+
+        if (texturePath != null && !texturePath.isEmpty()) {
+            gameObject.setTexturePath(texturePath);
         }
 
         return gameObject;
@@ -258,6 +263,9 @@ public class EnvironmentLoader {
 
         @SerializedName("color")
         public ColorData color;
+
+        @SerializedName("texturePath")
+        public String texturePath;
     }
 
     public static class PortalData {

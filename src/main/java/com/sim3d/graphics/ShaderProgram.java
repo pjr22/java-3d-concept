@@ -143,4 +143,11 @@ public class ShaderProgram {
             glUniform1i(location, value);
         }
     }
+
+    public void setUniform(String name, boolean value) {
+        int location = getUniformLocation(name);
+        if (location >= 0) {
+            glUniform1i(location, value ? 1 : 0);
+        }
+    }
 }
