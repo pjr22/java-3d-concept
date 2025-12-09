@@ -26,6 +26,7 @@ public class Renderer {
     private Map<String, Mesh> primitiveMeshes;
     private Vector3f lightDirection;
     private AssetManager assetManager;
+    private Texture grassTexture;
 
     public Renderer() {
         this.camera = new Camera();
@@ -86,13 +87,30 @@ public class Renderer {
 
         Vector3f bounds = environment.getBounds();
         Vector3f groundColor = environment.getGroundColor();
-        groundPlane = PrimitiveFactory.createPlane(bounds.x * 2, bounds.z * 2, groundColor);
+        
+        // Create a textured plane with tiling (scale factor controls how many times texture repeats)
+        float textureScale = 10.0f; // Texture will repeat every 10 units
+        groundPlane = PrimitiveFactory.createTexturedPlane(bounds.x * 2, bounds.z * 2, groundColor, textureScale);
 
         Matrix4f modelMatrix = new Matrix4f().identity();
         shaderProgram.setUniform("model", modelMatrix);
         shaderProgram.setUniform("objectColor", groundColor);
 
-        groundPlane.render();
+        // Load and bind grass texture
+        if (grassTexture == null) {
+            grassTexture = TextureLoader.load("textures/grass_tile.jpg");
+        }
+        
+        if (grassTexture != null) {
+            grassTexture.bind(0);
+            shaderProgram.setUniform("useTexture", true);
+            groundPlane.render();
+            grassTexture.unbind();
+        } else {
+            // Fallback to untextured rendering if texture loading fails
+            shaderProgram.setUniform("useTexture", false);
+            groundPlane.render();
+        }
     }
 
     private void renderGameObject(GameObject obj) {
@@ -185,6 +203,9 @@ public class Renderer {
         }
         if (groundPlane != null) {
             groundPlane.cleanup();
+        }
+        if (grassTexture != null) {
+            grassTexture.cleanup();
         }
         for (Mesh mesh : primitiveMeshes.values()) {
             mesh.cleanup();

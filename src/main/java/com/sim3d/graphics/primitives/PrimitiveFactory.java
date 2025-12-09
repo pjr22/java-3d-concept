@@ -74,6 +74,31 @@ public class PrimitiveFactory {
         return new Mesh(vertices, indices);
     }
 
+    public static Mesh createTexturedPlane(float width, float depth, Vector3f color, float textureScale) {
+        float r = color.x, g = color.y, b = color.z;
+        float hw = width / 2;
+        float hd = depth / 2;
+
+        // Calculate texture coordinates based on scale (for tiling)
+        float uMin = 0.0f;
+        float uMax = width / textureScale;
+        float vMin = 0.0f;
+        float vMax = depth / textureScale;
+
+        float[] vertices = {
+            -hw, 0, -hd,  r, g, b,  0, 1, 0,  uMin, vMax,
+             hw, 0, -hd,  r, g, b,  0, 1, 0,  uMax, vMax,
+             hw, 0,  hd,  r, g, b,  0, 1, 0,  uMax, vMin,
+            -hw, 0,  hd,  r, g, b,  0, 1, 0,  uMin, vMin,
+        };
+
+        int[] indices = {
+            0, 3, 2, 2, 1, 0  // Reversed winding order to make face visible from above
+        };
+
+        return new Mesh(vertices, indices, true); // true indicates hasTextureCoords
+    }
+
     public static Mesh createPyramid(Vector3f color) {
         float r = color.x, g = color.y, b = color.z;
         float apex = 1.0f;
