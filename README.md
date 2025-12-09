@@ -29,6 +29,7 @@ A cross-platform 3D simulation/game engine implemented in Java 21, featuring JSO
 5. **Player/Observer**: First-person camera with keyboard/mouse controls
 6. **JSON Configuration**: World and environment definitions loaded from JSON files
 7. **Menu System**: ESC key triggers pause menu with exit option
+8. **FPS Display**: Optional frames-per-second counter for performance monitoring
 
 ### Technical Requirements
 
@@ -185,7 +186,10 @@ The `settings.json` file contains application-wide configuration that can be cus
     "width": 1280,
     "height": 720
   },
-  "logLevel": "info"
+  "logLevel": "info",
+  "display": {
+    "showFPS": false
+  }
 }
 ```
 
@@ -197,6 +201,7 @@ The `settings.json` file contains application-wide configuration that can be cus
 | `window.width` | integer | 1280 | Window width in pixels (when not fullscreen) |
 | `window.height` | integer | 720 | Window height in pixels (when not fullscreen) |
 | `logLevel` | string | "info" | Logging level: "trace", "debug", "info", "warn", "error" |
+| `display.showFPS` | boolean | false | Show FPS counter in upper-right corner of screen |
 
 #### Logging Levels
 
@@ -467,6 +472,7 @@ LWJGL 3 provides native binaries for all supported platforms. The Gradle build a
 - [x] Text rendering system with font support
 - [x] UI menu system with text rendering
 - [x] SVG placeholder texture support
+- [x] FPS display counter
 - [ ] Collision detection
 - [ ] Actor AI and pathfinding
 - [ ] Sound system

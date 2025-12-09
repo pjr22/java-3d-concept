@@ -4,6 +4,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.IntBuffer;
 
@@ -11,6 +13,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
+    private static final Logger logger = LoggerFactory.getLogger(Window.class);
     private int width = 1280;
     private int height = 720;
     private String title;
@@ -35,6 +38,8 @@ public class Window {
     }
 
     public void init() {
+        logger.info("Initializing window with fullscreen: {}, size: {}x{}", fullscreen, width, height);
+        
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {
@@ -51,6 +56,7 @@ public class Window {
 
         long monitor = fullscreen ? glfwGetPrimaryMonitor() : NULL;
         if (fullscreen) {
+            logger.info("Creating fullscreen window");
             // Get the video mode of the primary monitor
             GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
             if (vidMode != null) {
@@ -59,7 +65,10 @@ public class Window {
                 // Update the window dimensions
                 this.width = width;
                 this.height = height;
+                logger.info("Fullscreen resolution set to {}x{}", width, height);
             }
+        } else {
+            logger.info("Creating windowed mode window");
         }
         
         windowHandle = glfwCreateWindow(width, height, title, monitor, NULL);

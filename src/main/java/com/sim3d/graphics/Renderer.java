@@ -98,7 +98,7 @@ public class Renderer {
 
         // Load and bind grass texture
         if (grassTexture == null) {
-            grassTexture = TextureLoader.load("textures/grass_tile.jpg");
+            grassTexture = TextureLoader.load("textures/grass2_tile.jpg");
         }
         
         if (grassTexture != null) {

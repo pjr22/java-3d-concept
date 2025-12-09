@@ -1,6 +1,7 @@
 package com.sim3d.engine;
 
 import com.sim3d.graphics.Renderer;
+import com.sim3d.graphics.TextRenderer;
 import com.sim3d.input.InputHandler;
 import com.sim3d.input.MouseInput;
 import com.sim3d.loader.WorldLoader;
@@ -19,6 +20,7 @@ public class Engine {
 
     private Window window;
     private Renderer renderer;
+    private TextRenderer textRenderer;
     private InputHandler inputHandler;
     private MouseInput mouseInput;
     private MenuSystem menuSystem;
@@ -27,6 +29,11 @@ public class Engine {
     private boolean running;
 
     private long lastTime;
+    
+    // FPS calculation variables
+    private int frameCount = 0;
+    private double fpsTimeAccumulator = 0.0;
+    private double currentFPS = 0.0;
 
     public void init() {
         logger.info("Initializing engine...");
@@ -46,6 +53,8 @@ public class Engine {
 
         menuSystem = new MenuSystem();
         menuSystem.initialize();
+        
+        textRenderer = new TextRenderer();
 
         WorldLoader worldLoader = new WorldLoader();
         try {
@@ -88,6 +97,9 @@ public class Engine {
             long currentTime = System.nanoTime();
             float deltaTime = (currentTime - lastTime) / 1_000_000_000.0f;
             lastTime = currentTime;
+            
+            // Update FPS calculation
+            updateFPS(deltaTime);
 
             glfwPollEvents();
             update(deltaTime);
@@ -175,6 +187,35 @@ public class Engine {
         if (menuSystem.isVisible()) {
             menuSystem.render(window.getWidth(), window.getHeight());
         }
+        
+        // Render FPS if enabled
+        Settings settings = Settings.getInstance();
+        if (settings.isShowFPS()) {
+            renderFPS();
+        }
+    }
+    
+    private void updateFPS(float deltaTime) {
+        frameCount++;
+        fpsTimeAccumulator += deltaTime;
+        
+        // Update FPS every second
+        if (fpsTimeAccumulator >= 1.0) {
+            currentFPS = frameCount / fpsTimeAccumulator;
+            frameCount = 0;
+            fpsTimeAccumulator = 0.0;
+        }
+    }
+    
+    private void renderFPS() {
+        String fpsText = String.format("FPS: %.1f", currentFPS);
+        float[] whiteColor = {1.0f, 1.0f, 1.0f};
+        
+        // Position in upper-right corner with some padding
+        float x = window.getWidth() - textRenderer.getTextWidth(fpsText, 0.5f) - 20;
+        float y = 30;
+        
+        textRenderer.renderText(fpsText, x, y, 0.5f, whiteColor, window.getWidth(), window.getHeight());
     }
 
     private boolean shouldExit() {
@@ -186,6 +227,9 @@ public class Engine {
 
         if (renderer != null) {
             renderer.cleanup();
+        }
+        if (textRenderer != null) {
+            textRenderer.cleanup();
         }
         if (menuSystem != null) {
             menuSystem.cleanup();

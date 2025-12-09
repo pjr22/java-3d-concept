@@ -4,5 +4,8 @@
     "width": 1920,
     "height": 1080
   },
-  "logLevel": "info"
+  "logLevel": "info",
+  "display": {
+    "showFPS": true
+  }
 }

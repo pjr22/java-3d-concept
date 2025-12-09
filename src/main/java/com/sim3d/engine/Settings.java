@@ -21,6 +21,7 @@ public class Settings {
     
     private WindowSettings window;
     private String logLevel;
+    private DisplaySettings display;
     
     private Settings() {
         // Private constructor for singleton
@@ -46,6 +47,7 @@ public class Settings {
                     if (data != null && data.window != null) {
                         this.window = data.window;
                         this.logLevel = data.logLevel;
+                        this.display = data.display;
                         logger.info("Default settings loaded from resources");
                     } else {
                         logger.warn("Invalid default settings format, creating default settings");
@@ -70,6 +72,9 @@ public class Settings {
                     if (data.logLevel != null) {
                         this.logLevel = data.logLevel;
                     }
+                    if (data.display != null) {
+                        this.display = data.display;
+                    }
                     logger.info("User settings loaded successfully from {}", SETTINGS_FILE);
                 } else {
                     logger.warn("Invalid user settings format, keeping default settings");
@@ -86,6 +91,8 @@ public class Settings {
         this.window.width = 1280;
         this.window.height = 720;
         this.logLevel = "info";
+        this.display = new DisplaySettings();
+        this.display.showFPS = false;
     }
     
     public void saveSettings() {
@@ -94,6 +101,7 @@ public class Settings {
             SettingsData data = new SettingsData();
             data.window = this.window;
             data.logLevel = this.logLevel;
+            data.display = this.display;
             
             gson.toJson(data, writer);
             logger.info("Settings saved to {}", SETTINGS_FILE);
@@ -143,15 +151,38 @@ public class Settings {
         this.logLevel = logLevel;
     }
     
+    public DisplaySettings getDisplay() {
+        return display != null ? display : new DisplaySettings();
+    }
+    
+    public void setDisplay(DisplaySettings display) {
+        this.display = display;
+    }
+    
+    public boolean isShowFPS() {
+        return display != null && display.showFPS;
+    }
+    
+    public void setShowFPS(boolean showFPS) {
+        if (display != null) {
+            display.showFPS = showFPS;
+        }
+    }
+    
     // Inner classes for JSON serialization
     public static class SettingsData {
         public WindowSettings window;
         public String logLevel;
+        public DisplaySettings display;
     }
     
     public static class WindowSettings {
         public boolean fullscreen;
         public int width;
         public int height;
+    }
+    
+    public static class DisplaySettings {
+        public boolean showFPS;
     }
 }
