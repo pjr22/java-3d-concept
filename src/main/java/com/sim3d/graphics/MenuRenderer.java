@@ -1,9 +1,6 @@
 package com.sim3d.graphics;
 
 import org.joml.Matrix4f;
-import org.lwjgl.system.MemoryStack;
-
-import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
 

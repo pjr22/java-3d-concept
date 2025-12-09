@@ -1,12 +1,8 @@
 package com.sim3d.graphics;
 
-import org.lwjgl.system.MemoryStack;
-
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
-import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
     private final int textureId;

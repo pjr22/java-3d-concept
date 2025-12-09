@@ -1,5 +1,6 @@
 bin
 build
+.vscode
 
 # Ignore Gradle project-specific cache directory
 .gradle

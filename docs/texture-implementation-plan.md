@@ -126,8 +126,8 @@ vec3 finalColor = mix(objectColor, texColor.rgb, texColor.a);
   "type": "actor",
   "subtype": "creature",
   "name": "Spotted Cow",
-  "modelPath": "assets/spot/spot_control_mesh.obj",
-  "texturePath": "assets/spot/spot_texture.obj",
+  "modelPath": "assets/spot/spot_triangulated.obj",
+  "texturePath": "assets/spot/spot_texture.png",
   "color": { "r": 1.0, "g": 1.0, "b": 1.0 },
   "transform": {
     "position": { "x": 0, "y": 0, "z": 0 },

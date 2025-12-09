@@ -96,64 +96,78 @@ java_3d_concept/
 │       ├── java/
 │       │   └── com/
 │       │       └── sim3d/
-│       │           ├── Main.java                    # Application entry point
+│       │           ├── Main.java                     # Application entry point
 │       │           ├── engine/
-│       │           │   ├── Engine.java              # Main game loop
-│       │           │   ├── Settings.java            # Application settings management
-│       │           │   ├── Window.java              # GLFW window management
-│       │           │   └── Timer.java               # Frame timing
+│       │           │   ├── Engine.java               # Main game loop
+│       │           │   ├── Settings.java             # Application settings management
+│       │           │   ├── Window.java               # GLFW window management
+│       │           │   └── Timer.java                # Frame timing
 │       │           ├── graphics/
-│       │           │   ├── Renderer.java            # OpenGL rendering
-│       │           │   ├── Camera.java              # First-person camera
-│       │           │   ├── ShaderProgram.java       # GLSL shader handling
-│       │           │   ├── Mesh.java                # 3D mesh data
+│       │           │   ├── Renderer.java             # OpenGL rendering
+│       │           │   ├── Camera.java               # First-person camera
+│       │           │   ├── ShaderProgram.java        # GLSL shader handling
+│       │           │   ├── Mesh.java                 # 3D mesh data
+│       │           │   ├── Texture.java              # OpenGL texture management
+│       │           │   ├── TextureLoader.java        # Texture loading with STB
+│       │           │   ├── MenuRenderer.java         # UI menu rendering
+│       │           │   ├── TextRenderer.java         # Text rendering with STB
 │       │           │   └── primitives/
-│       │           │       ├── Cube.java            # Cube mesh generator
-│       │           │       ├── Plane.java           # Plane mesh generator
-│       │           │       └── Sphere.java          # Sphere mesh generator
+│       │           │       └── PrimitiveFactory.java # All primitive mesh generators
 │       │           ├── input/
-│       │           │   ├── InputHandler.java        # Keyboard/mouse input
-│       │           │   └── MouseInput.java          # Mouse movement tracking
+│       │           │   ├── InputHandler.java         # Keyboard/mouse input
+│       │           │   └── MouseInput.java           # Mouse movement tracking
 │       │           ├── model/
-│       │           │   ├── World.java               # World container
-│       │           │   ├── Environment.java         # Base environment class
-│       │           │   ├── OutdoorEnvironment.java  # Outdoor specialization
-│       │           │   ├── IndoorEnvironment.java   # Indoor specialization
-│       │           │   ├── Portal.java              # Environment transition
-│       │           │   ├── GameObject.java          # Base object class
-│       │           │   ├── Actor.java               # Intelligent entities
-│       │           │   ├── StaticObject.java        # Inanimate objects
-│       │           │   ├── Container.java           # Storage objects
-│       │           │   ├── Player.java              # Player/observer
-│       │           │   └── Transform.java           # Position/rotation/scale
+│       │           │   ├── World.java                # World container
+│       │           │   ├── Environment.java          # Base environment class
+│       │           │   ├── OutdoorEnvironment.java   # Outdoor specialization
+│       │           │   ├── IndoorEnvironment.java    # Indoor specialization
+│       │           │   ├── Portal.java               # Environment transition
+│       │           │   ├── GameObject.java           # Base object class
+│       │           │   ├── Actor.java                # Intelligent entities
+│       │           │   ├── StaticObject.java         # Inanimate objects
+│       │           │   ├── Container.java            # Storage objects
+│       │           │   ├── Player.java               # Player/observer
+│       │           │   └── Transform.java            # Position/rotation/scale
 │       │           ├── loader/
-│       │           │   ├── WorldLoader.java         # JSON world parser
-│       │           │   ├── EnvironmentLoader.java   # JSON environment parser
-│       │           │   ├── ObjLoader.java           # Wavefront OBJ model loader
-│       │           │   ├── Model.java               # Loaded 3D model container
-│       │           │   └── AssetManager.java        # Model caching and management
+│       │           │   ├── WorldLoader.java          # JSON world parser
+│       │           │   ├── EnvironmentLoader.java    # JSON environment parser
+│       │           │   ├── ObjLoader.java            # Wavefront OBJ model loader
+│       │           │   ├── Model.java                # Loaded 3D model container
+│       │           │   └── AssetManager.java         # Model caching and management
 │       │           └── ui/
-│       │               ├── MenuSystem.java          # Menu management
-│       │               └── PauseMenu.java           # ESC pause menu
+│       │               └── MenuSystem.java           # Menu management
 │       └── resources/
-│           ├── settings.json                      # Application configuration
-│           ├── logback.xml                       # Logging configuration
+│           ├── settings.json                         # Application configuration
+│           ├── logback.xml                           # Logging configuration
 │           ├── shaders/
-│           │   ├── vertex.glsl                      # Vertex shader
-│           │   └── fragment.glsl                    # Fragment shader
-│           ├── models/                              # 3D model assets
-│           │   ├── rabbit.obj                       # Rabbit model
-│           │   ├── tree.obj                         # Tree model
-│           │   ├── rock.obj                         # Rock model
-│           │   ├── cabin.obj                        # Cabin model
-│           │   ├── table.obj                        # Table model
-│           │   └── chair.obj                        # Chair model
+│           │   ├── vertex.glsl                       # Vertex shader
+│           │   ├── fragment.glsl                     # Fragment shader
+│           │   ├── ui_vertex.glsl                    # UI vertex shader
+│           │   └── ui_fragment.glsl                  # UI fragment shader
+│           ├── models/                               # 3D model assets
+│           │   ├── rabbit.obj                        # Rabbit model
+│           │   ├── tree.obj                          # Tree model
+│           │   ├── rock.obj                          # Rock model
+│           │   ├── cabin.obj                         # Cabin model
+│           │   ├── table.obj                         # Table model
+│           │   └── chair.obj                         # Chair model
+│           ├── textures/
+│           │   └── grass_tile.jpg                    # Ground texture
+│           ├── assets/                               # Complex textured assets
+│           │   └── spot/                             # Spot cow model with textures
+│           │       ├── spot_control_mesh.obj         # Control mesh (not for use)
+│           │       ├── spot_triangulated.obj         # Triangulated mesh
+│           │       ├── spot_quadrangulated.obj       # Quad mesh
+│           │       ├── spot_texture.png              # Texture map
+│           │       └── spot_texture.svg              # SVG texture
+│           └── Roboto.ttf                            # Font for UI text
 │           └── worlds/
-│               ├── demo_world.json                  # Demo world definition
-│               ├── outdoor_forest.json              # Outdoor environment
-│               └── indoor_cabin.json                # Indoor environment
+│               ├── demo_world.json                   # Demo world definition
+│               ├── outdoor_forest.json               # Outdoor environment
+│               └── indoor_cabin.json                 # Indoor environment
 └── docs/
-    └── json-schema.md                               # JSON schema documentation
+    ├── texture-best-practices.md                     # Texture usage guide
+    └── texture-implementation-plan.md                # Implementation details
 ```
 
 ## Configuration
@@ -450,12 +464,17 @@ LWJGL 3 provides native binaries for all supported platforms. The Gradle build a
 ## Future Enhancements
 
 - [x] Texture loading and mapping
+- [x] Text rendering system with font support
+- [x] UI menu system with text rendering
+- [x] SVG placeholder texture support
 - [ ] Collision detection
 - [ ] Actor AI and pathfinding
 - [ ] Sound system
 - [ ] Save/load game state
 - [ ] Multiplayer support
 - [ ] Physics engine integration
+- [ ] Normal mapping and advanced materials
+- [ ] Texture atlases for performance optimization
 
 ## License
 

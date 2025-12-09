@@ -50,9 +50,14 @@ public class Engine {
         WorldLoader worldLoader = new WorldLoader();
         try {
             world = worldLoader.loadWorld(WORLD_PATH);
-            logger.info("World loaded: {}", world.getName());
+            if (world == null) {
+                logger.warn("World loader returned null for {}, creating empty world", WORLD_PATH);
+                world = new World("empty", "Empty World");
+            } else {
+                logger.info("World loaded: {}", world.getName());
+            }
         } catch (Exception e) {
-            logger.warn("Failed to load world from {}, creating empty world: {}", WORLD_PATH, e.getMessage());
+            logger.error("Failed to load world from {}, creating empty world: {}", WORLD_PATH, e.getMessage(), e);
             world = new World("empty", "Empty World");
         }
 
@@ -61,7 +66,13 @@ public class Engine {
         if (currentEnv != null) {
             player.setPosition(currentEnv.getSpawnPoint());
             // Preload models and textures for the current environment
-            renderer.preloadModels(currentEnv);
+            try {
+                renderer.preloadModels(currentEnv);
+            } catch (Exception e) {
+                logger.warn("Failed to preload models for environment {}: {}", currentEnv.getName(), e.getMessage());
+            }
+        } else {
+            logger.warn("No current environment found in world");
         }
 
         mouseInput.captureMouse();
