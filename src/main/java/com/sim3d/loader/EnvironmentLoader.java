@@ -129,6 +129,8 @@ public class EnvironmentLoader {
     private Portal createPortal(PortalData data) {
         Vector3f position = new Vector3f();
         Vector3f triggerSize = new Vector3f(2, 3, 2);
+        Vector3f color = new Vector3f(0.5f, 0.8f, 1.0f); // Default light blue
+        float transparency = 0.3f; // Default semi-transparent
 
         if (data.transform != null && data.transform.position != null) {
             position = toVector3f(data.transform.position);
@@ -138,7 +140,15 @@ public class EnvironmentLoader {
             triggerSize = toVector3f(data.triggerSize);
         }
 
-        return new Portal(
+        if (data.color != null) {
+            color = toColorVector(data.color);
+        }
+
+        if (data.transparency != null) {
+            transparency = data.transparency;
+        }
+
+        Portal portal = new Portal(
             data.id != null ? data.id : "portal_" + System.nanoTime(),
             data.name != null ? data.name : "Portal",
             data.targetEnvironmentId,
@@ -146,6 +156,11 @@ public class EnvironmentLoader {
             position,
             triggerSize
         );
+        
+        portal.setColor(color);
+        portal.setTransparency(transparency);
+        
+        return portal;
     }
 
     private Vector3f toVector3f(PositionData data) {
@@ -286,5 +301,11 @@ public class EnvironmentLoader {
 
         @SerializedName("triggerSize")
         public BoundsData triggerSize;
+
+        @SerializedName("color")
+        public ColorData color;
+
+        @SerializedName("transparency")
+        public Float transparency;
     }
 }

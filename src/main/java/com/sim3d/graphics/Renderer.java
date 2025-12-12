@@ -5,6 +5,7 @@ import com.sim3d.loader.AssetManager;
 import com.sim3d.loader.Model;
 import com.sim3d.model.Environment;
 import com.sim3d.model.GameObject;
+import com.sim3d.model.Portal;
 import com.sim3d.model.Player;
 import com.sim3d.model.Transform;
 import org.joml.Matrix4f;
@@ -76,6 +77,9 @@ public class Renderer {
         for (GameObject obj : environment.getObjects()) {
             renderGameObject(obj);
         }
+
+        // Render portals with transparency
+        renderPortals(environment);
 
         shaderProgram.unbind();
     }
@@ -177,6 +181,60 @@ public class Renderer {
             shaderProgram.setUniform("useTexture", false);
             mesh.render();
         }
+    }
+
+    private void renderPortals(Environment environment) {
+        // Enable blending for transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        // Disable depth writing but keep depth testing for proper transparency
+        glDepthMask(false);
+        
+        for (Portal portal : environment.getPortals()) {
+            renderPortal(portal);
+        }
+        
+        // Restore depth writing
+        glDepthMask(true);
+        
+        // Disable blending
+        glDisable(GL_BLEND);
+    }
+
+    private void renderPortal(Portal portal) {
+        Vector3f position = portal.getTransform().getPosition();
+        Vector3f triggerSize = portal.getTriggerSize();
+        Vector3f color = portal.getColor();
+        float transparency = portal.getTransparency();
+
+        // Create a box mesh for the portal trigger zone
+        Mesh portalMesh = PrimitiveFactory.createCube(triggerSize);
+        
+        Matrix4f modelMatrix = new Matrix4f()
+            .identity()
+            .translate(position)
+            .scale(triggerSize);
+
+        shaderProgram.setUniform("model", modelMatrix);
+        
+        // Set color with transparency
+        Vector3f colorWithAlpha = new Vector3f(color.x, color.y, color.z);
+        shaderProgram.setUniform("objectColor", colorWithAlpha);
+        shaderProgram.setUniform("useTexture", false);
+        
+        // Set a special uniform to indicate this is a transparent object
+        // We'll need to modify the fragment shader to handle this
+        shaderProgram.setUniform("isTransparent", true);
+        shaderProgram.setUniform("transparency", transparency);
+        
+        portalMesh.render();
+        
+        // Reset transparency flag
+        shaderProgram.setUniform("isTransparent", false);
+        
+        // Clean up the temporary mesh
+        portalMesh.cleanup();
     }
 
     public void preloadModels(Environment environment) {

@@ -105,7 +105,9 @@
         "width": 2,
         "height": 3,
         "depth": 1
-      }
+      },
+      "color": { "r": 1.0, "g": 0.6, "b": 0.2 },
+      "transparency": 0.4
     }
   ]
 }

@@ -12,6 +12,8 @@ uniform vec3 lightDirection;
 uniform float ambientStrength;
 uniform sampler2D textureSampler;
 uniform bool useTexture;
+uniform bool isTransparent;
+uniform float transparency;
 
 void main() {
     vec3 norm = normalize(fragNormal);
@@ -32,5 +34,10 @@ void main() {
     vec3 diffuse = diff * baseColor;
     
     vec3 result = ambient + diffuse;
-    FragColor = vec4(result, 1.0);
+    
+    if (isTransparent) {
+        FragColor = vec4(result, transparency);
+    } else {
+        FragColor = vec4(result, 1.0);
+    }
 }

@@ -238,10 +238,12 @@
         "rotation": { "x": 0, "y": 0, "z": 0 }
       },
       "triggerSize": {
-        "width": 10,
-        "height": 10,
+        "width": 3,
+        "height": 3,
         "depth": 2
-      }
+      },
+      "color": { "r": 0.2, "g": 0.6, "b": 1.0 },
+      "transparency": 0.4
     }
   ]
 }

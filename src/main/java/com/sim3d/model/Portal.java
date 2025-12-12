@@ -9,6 +9,8 @@ public class Portal {
     private String targetSpawnPointId;
     private Transform transform;
     private Vector3f triggerSize;
+    private Vector3f color;
+    private float transparency;
 
     public Portal(String id, String name, String targetEnvironmentId, String targetSpawnPointId) {
         this.id = id;
@@ -17,6 +19,8 @@ public class Portal {
         this.targetSpawnPointId = targetSpawnPointId;
         this.transform = Transform.identity();
         this.triggerSize = new Vector3f(2, 3, 2);
+        this.color = new Vector3f(0.5f, 0.8f, 1.0f); // Light blue default
+        this.transparency = 0.3f; // Semi-transparent default
     }
 
     public Portal(String id, String name, String targetEnvironmentId, String targetSpawnPointId,
@@ -27,6 +31,8 @@ public class Portal {
         this.targetSpawnPointId = targetSpawnPointId;
         this.transform = new Transform(position, new Vector3f(), new Vector3f(1, 1, 1));
         this.triggerSize = triggerSize != null ? triggerSize : new Vector3f(2, 3, 2);
+        this.color = new Vector3f(0.5f, 0.8f, 1.0f); // Light blue default
+        this.transparency = 0.3f; // Semi-transparent default
     }
 
     public boolean isPlayerInTrigger(Vector3f playerPos) {
@@ -90,5 +96,25 @@ public class Portal {
 
     public void setTriggerSize(float width, float height, float depth) {
         this.triggerSize.set(width, height, depth);
+    }
+
+    public Vector3f getColor() {
+        return color;
+    }
+
+    public void setColor(Vector3f color) {
+        this.color.set(color);
+    }
+
+    public void setColor(float r, float g, float b) {
+        this.color.set(r, g, b);
+    }
+
+    public float getTransparency() {
+        return transparency;
+    }
+
+    public void setTransparency(float transparency) {
+        this.transparency = Math.max(0.0f, Math.min(1.0f, transparency));
     }
 }

@@ -6,9 +6,11 @@ import com.sim3d.input.InputHandler;
 import com.sim3d.input.MouseInput;
 import com.sim3d.loader.WorldLoader;
 import com.sim3d.model.Environment;
+import com.sim3d.model.Portal;
 import com.sim3d.model.Player;
 import com.sim3d.model.World;
 import com.sim3d.ui.MenuSystem;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,10 @@ public class Engine {
     private int frameCount = 0;
     private double fpsTimeAccumulator = 0.0;
     private double currentFPS = 0.0;
+    
+    // Portal cooldown to prevent rapid triggering
+    private float portalCooldownTimer = 0.0f;
+    private static final float PORTAL_COOLDOWN_TIME = 2.0f; // 2 seconds cooldown
 
     public void init() {
         logger.info("Initializing engine...");
@@ -134,6 +140,7 @@ public class Engine {
         Environment currentEnv = world.getCurrentEnvironment();
         if (currentEnv != null) {
             currentEnv.update(deltaTime);
+            checkPortalTriggers(deltaTime);
         }
     }
 
@@ -176,6 +183,52 @@ public class Engine {
         float mouseDeltaY = mouseInput.getDeltaY();
 
         player.update(deltaTime, forward, backward, left, right, up, down, mouseDeltaX, mouseDeltaY);
+    }
+
+    private void checkPortalTriggers(float deltaTime) {
+        Environment currentEnv = world.getCurrentEnvironment();
+        if (currentEnv == null) return;
+
+        // Update portal cooldown
+        if (portalCooldownTimer > 0) {
+            portalCooldownTimer -= deltaTime;
+            return;
+        }
+
+        Vector3f playerPos = player.getPosition();
+        
+        for (Portal portal : currentEnv.getPortals()) {
+            if (portal.isPlayerInTrigger(playerPos)) {
+                logger.info("Player entered portal: {} -> {}", portal.getId(), portal.getTargetEnvironmentId());
+                
+                // Transition to the target environment
+                world.transitionTo(portal.getTargetEnvironmentId(), portal.getTargetSpawnPointId());
+                
+                // Get the spawn point for the new environment
+                world.getSpawnPointForTransition(portal.getTargetEnvironmentId(), portal.getTargetSpawnPointId())
+                    .ifPresent(spawnPoint -> {
+                        player.setPosition(spawnPoint);
+                        logger.info("Player teleported to spawn point: {}", spawnPoint);
+                    });
+                
+                // Preload models for the new environment
+                Environment newEnv = world.getCurrentEnvironment();
+                if (newEnv != null) {
+                    try {
+                        renderer.preloadModels(newEnv);
+                    } catch (Exception e) {
+                        logger.warn("Failed to preload models for environment {}: {}",
+                                   newEnv.getName(), e.getMessage());
+                    }
+                }
+                
+                // Set portal cooldown to prevent rapid triggering
+                portalCooldownTimer = PORTAL_COOLDOWN_TIME;
+                
+                // Only process one portal per frame to avoid rapid transitions
+                break;
+            }
+        }
     }
 
     private void render() {
