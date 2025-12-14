@@ -481,6 +481,134 @@ The application first loads default settings from `src/main/resources/settings.j
 
 LWJGL 3 provides native binaries for all supported platforms. The Gradle build automatically includes the appropriate natives based on the runtime platform.
 
+## Raspberry Pi Setup
+
+This application can run on Raspberry Pi devices with proper graphics drivers installed. The application supports running in fullscreen mode directly on the framebuffer without requiring an X11 server or window manager.
+
+### System Requirements
+
+- Raspberry Pi 4 or 5 (recommended)
+- Raspberry Pi OS (Lite or Desktop) with arm64 architecture
+- OpenGL ES 2.0+ compatible graphics drivers
+- At least 1GB of available RAM
+
+### Installing Graphics Drivers
+
+#### Check Current OpenGL Support
+
+First, check what OpenGL drivers are currently installed:
+
+```bash
+# Check OpenGL version and renderer
+glxinfo | grep -E "OpenGL version|OpenGL renderer"
+```
+
+If glxinfo isn't installed:
+```bash
+# Install mesa-utils if not already present
+sudo apt update
+sudo apt install mesa-utils
+```
+
+For Raspberry Pi 5 specific information:
+```bash
+# Check for VC6/V7 firmware (Pi 5 uses VC6)
+vcgencmd version
+```
+
+#### Install Proprietary Broadcom Drivers
+
+For Raspberry Pi 5, you'll want to use the proprietary drivers for best performance:
+
+```bash
+# Update package lists
+sudo apt update
+
+# Install the full proprietary driver stack
+sudo apt install libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0
+
+# Install OpenGL ES libraries
+sudo apt install libgles2-mesa-dev
+
+# Install additional graphics libraries
+sudo apt install libegl1-mesa-dev libgbm1 libgl1-mesa-dev
+
+# Install firmware updates
+sudo apt install raspberrypi-bootloader
+```
+
+#### Configure for Maximum Performance
+
+Edit the boot configuration:
+```bash
+sudo nano /boot/firmware/config.txt
+```
+
+Add or ensure these lines are present:
+```
+# Enable DRM/KMS (Direct Rendering Manager/Kernel Mode Setting)
+dtoverlay=vc4-kms-v3d
+
+# GPU memory allocation (adjust based on your needs)
+gpu_mem=128
+
+# Enable 64-bit mode if not already enabled
+arm_64bit=1
+```
+
+#### Verify Installation
+
+After installation and reboot:
+```bash
+# Reboot to apply changes
+sudo reboot
+
+# After reboot, verify OpenGL ES support
+es2_info
+```
+
+#### Additional Java-Specific Requirements
+
+Since you're running a Java application with LWJGL, you may also need:
+```bash
+# Install additional libraries that LWJGL might need
+sudo apt install libxrandr2 libxinerama1 libxi6 libxcursor1 libxcomposite1 libasound2-dev
+```
+
+#### Performance Testing
+
+To test if the drivers are working properly before running the Java application:
+```bash
+# Install a simple OpenGL ES test
+sudo apt install glmark2-es2-wayland
+
+# Run the benchmark
+glmark2-es2-wayland
+```
+
+### Running on Raspberry Pi
+
+1. Build the application on the Raspberry Pi or transfer the built JAR file
+2. Ensure the settings.json file is configured for fullscreen mode (default)
+3. Run the application:
+   ```bash
+   java -jar build/libs/java_3d_concept.jar
+   ```
+
+The application should launch in fullscreen mode directly on the framebuffer, bypassing any need for a window manager.
+
+### Troubleshooting
+
+If you encounter any issues with the proprietary drivers, you can fall back to the open-source Mesa drivers:
+```bash
+sudo apt install mesa-utils-extra libgl1-mesa-dri
+```
+
+For performance issues, consider:
+- Increasing GPU memory allocation in config.txt
+- Ensuring the Raspberry Pi is properly cooled
+- Using a high-quality power supply
+
 ## Dependencies
 
 | Library | Version | Purpose |
