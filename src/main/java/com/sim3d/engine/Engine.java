@@ -18,8 +18,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Engine {
     private static final Logger logger = LoggerFactory.getLogger(Engine.class);
-    private static final String WORLD_PATH = "worlds/demo_world.json";
 
+    private String worldPath;
     private Window window;
     private Renderer renderer;
     private TextRenderer textRenderer;
@@ -45,7 +45,23 @@ public class Engine {
         logger.info("Initializing engine...");
 
         Settings settings = Settings.getInstance();
-        window = new Window("3D Simulation Engine", settings.getWindowWidth(), settings.getWindowHeight(), settings.isFullscreen());
+
+        WorldLoader worldLoader = new WorldLoader();
+        try {
+            worldPath = settings.getWorldPath();
+            world = worldLoader.loadWorld(worldPath);
+            if (world == null) {
+                logger.warn("World loader returned null for {}, creating empty world", worldPath);
+                world = new World("empty", "Empty World");
+            } else {
+                logger.info("World loaded: {}", world.getName());
+            }
+        } catch (Exception e) {
+            logger.error("Failed to load world from {}, creating empty world: {}", worldPath, e.getMessage(), e);
+            world = new World("empty", "Empty World");
+        }
+        
+        window = new Window(world.getName(), settings.getWindowWidth(), settings.getWindowHeight(), settings.isFullscreen());
         window.init();
 
         renderer = new Renderer();
@@ -61,20 +77,6 @@ public class Engine {
         menuSystem.initialize();
         
         textRenderer = new TextRenderer();
-
-        WorldLoader worldLoader = new WorldLoader();
-        try {
-            world = worldLoader.loadWorld(WORLD_PATH);
-            if (world == null) {
-                logger.warn("World loader returned null for {}, creating empty world", WORLD_PATH);
-                world = new World("empty", "Empty World");
-            } else {
-                logger.info("World loaded: {}", world.getName());
-            }
-        } catch (Exception e) {
-            logger.error("Failed to load world from {}, creating empty world: {}", WORLD_PATH, e.getMessage(), e);
-            world = new World("empty", "Empty World");
-        }
 
         player = new Player();
         Environment currentEnv = world.getCurrentEnvironment();

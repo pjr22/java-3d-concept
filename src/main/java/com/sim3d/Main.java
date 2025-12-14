@@ -11,8 +11,12 @@ public class Main {
     private static Logger logger;
 
     public static void main(String[] args) {
+        // Parse command line arguments
+        String customSettingsPath = parseCommandLineArgs(args);
+        
         // Initialize settings first to get log level
-        Settings settings = Settings.getInstance();
+        Settings settings = customSettingsPath != null ?
+            Settings.getInstance(customSettingsPath) : Settings.getInstance();
         String logLevel = settings.getLogLevel();
         
         // Configure logging level programmatically
@@ -49,5 +53,34 @@ public class Main {
             // Fallback to default if configuration fails
             System.err.println("Failed to configure log level: " + e.getMessage());
         }
+    }
+    
+    private static String parseCommandLineArgs(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--settings") || args[i].equals("-s")) {
+                if (i + 1 < args.length) {
+                    return args[i + 1];
+                } else {
+                    System.err.println("Error: --settings option requires a file path");
+                    System.exit(1);
+                }
+            } else if (args[i].equals("--help") || args[i].equals("-h")) {
+                printUsage();
+                System.exit(0);
+            }
+        }
+        return null;
+    }
+    
+    private static void printUsage() {
+        System.out.println("Usage: java -jar java_3d_concept.jar [options]");
+        System.out.println("Options:");
+        System.out.println("  -s, --settings <path>   Path to custom settings file");
+        System.out.println("  -h, --help              Show this help message");
+        System.out.println();
+        System.out.println("Examples:");
+        System.out.println("  java -jar java_3d_concept.jar");
+        System.out.println("  java -jar java_3d_concept.jar --settings my_config.json");
+        System.out.println("  java -jar java_3d_concept.jar -s /path/to/custom_settings.json");
     }
 }

@@ -153,7 +153,8 @@ java_3d_concept/
 │           │   ├── table.obj                         # Table model
 │           │   └── chair.obj                         # Chair model
 │           ├── textures/
-│           │   └── grass_tile.jpg                    # Ground texture
+│           │   ├── grass_tile.jpg                    # Ground texture
+│           │   └── grass2_tile.jpg                    # Alternative ground texture
 │           ├── assets/                               # Complex textured assets
 │           │   └── spot/                             # Spot cow model with textures
 │           │       ├── spot_control_mesh.obj         # Control mesh (not for use)
@@ -182,13 +183,13 @@ The `settings.json` file contains application-wide configuration that can be cus
 ```json
 {
   "window": {
-    "fullscreen": false,
-    "width": 1280,
-    "height": 720
+    "fullscreen": true,
+    "width": 1920,
+    "height": 1080
   },
   "logLevel": "info",
   "display": {
-    "showFPS": false
+    "showFPS": true
   }
 }
 ```
@@ -197,11 +198,11 @@ The `settings.json` file contains application-wide configuration that can be cus
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `window.fullscreen` | boolean | false | Start application in fullscreen mode |
-| `window.width` | integer | 1280 | Window width in pixels (when not fullscreen) |
-| `window.height` | integer | 720 | Window height in pixels (when not fullscreen) |
+| `window.fullscreen` | boolean | true | Start application in fullscreen mode |
+| `window.width` | integer | 1920 | Window width in pixels (when not fullscreen) |
+| `window.height` | integer | 1080 | Window height in pixels (when not fullscreen) |
 | `logLevel` | string | "info" | Logging level: "trace", "debug", "info", "warn", "error" |
-| `display.showFPS` | boolean | false | Show FPS counter in upper-right corner of screen |
+| `display.showFPS` | boolean | true | Show FPS counter in upper-right corner of screen |
 
 #### Logging Levels
 
@@ -211,7 +212,11 @@ The `settings.json` file contains application-wide configuration that can be cus
 - **warn**: Warning messages for potential issues
 - **error**: Error messages only
 
-The application first loads default settings from `src/main/resources/settings.json`, then overrides them with user settings from the root `settings.json` file if it exists.
+The application first loads default settings from `src/main/resources/settings.json`, then overrides them with user settings from:
+1. A custom settings file specified via command line (`--settings <path>`)
+2. The root `settings.json` file if it exists and no custom file is specified
+
+This allows for flexible configuration management where users can have multiple configuration files for different use cases.
 
 ### Logging Configuration (logback.xml)
 
@@ -425,8 +430,27 @@ For detailed guidance, see [docs/texture-best-practices.md](docs/texture-best-pr
 ### Running from JAR
 
 ```bash
+# Run with default settings
 java -jar build/libs/java_3d_concept.jar
+
+# Run with custom settings file
+java -jar build/libs/java_3d_concept.jar --settings my_config.json
+
+# Run with custom settings file (short form)
+java -jar build/libs/java_3d_concept.jar -s /path/to/custom_settings.json
+
+# Show help
+java -jar build/libs/java_3d_concept.jar --help
 ```
+
+#### Command Line Options
+
+| Option | Short Form | Description | Example |
+|--------|------------|-------------|---------|
+| `--settings <path>` | `-s <path>` | Path to custom settings file | `--settings config.json` |
+| `--help` | `-h` | Show help message | `--help` |
+
+The application first loads default settings from `src/main/resources/settings.json`, then overrides them with the specified custom settings file if provided. If the custom settings file doesn't exist, the application continues with default settings.
 
 ## Controls
 

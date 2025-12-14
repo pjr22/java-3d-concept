@@ -63,8 +63,10 @@ public class MenuRenderer {
         
         // Create semi-transparent background overlay
         float[] vertices = {
-            // Position     // TexCoord (unused for background)
-            0, 0,          0, 0,
+            // Position
+            0, 0,
+            // TexCoord (unused for background)
+            0, 0,
             windowWidth, 0, 0, 0,
             0, windowHeight, 0, 0,
             

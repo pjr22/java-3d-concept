@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Settings {
+    public static final String DEFAULT_WORLD_PATH = "worlds/demo_world.json";
+    public static final String DEFAULT_LOG_LEVEL = "INFO";
     private static final Logger logger = LoggerFactory.getLogger(Settings.class);
     private static final String SETTINGS_FILE = "settings.json";
     private static Settings instance;
@@ -22,6 +24,7 @@ public class Settings {
     private WindowSettings window;
     private String logLevel;
     private DisplaySettings display;
+    private WorldSettings world;
     
     private Settings() {
         // Private constructor for singleton
@@ -30,12 +33,20 @@ public class Settings {
     public static Settings getInstance() {
         if (instance == null) {
             instance = new Settings();
-            instance.loadSettings();
+            instance.loadSettings(null);
         }
         return instance;
     }
     
-    private void loadSettings() {
+    public static Settings getInstance(String customSettingsPath) {
+        if (instance == null) {
+            instance = new Settings();
+            instance.loadSettings(customSettingsPath);
+        }
+        return instance;
+    }
+    
+    private void loadSettings(String customSettingsPath) {
         // First try to load from resources (default settings)
         try {
             String resourcePath = "/" + SETTINGS_FILE;
@@ -48,6 +59,7 @@ public class Settings {
                         this.window = data.window;
                         this.logLevel = data.logLevel;
                         this.display = data.display;
+                        this.world = data.world;
                         logger.info("Default settings loaded from resources");
                     } else {
                         logger.warn("Invalid default settings format, creating default settings");
@@ -61,26 +73,35 @@ public class Settings {
         }
         
         // Then try to load from user settings file (overwrites defaults)
-        Path settingsPath = Paths.get(SETTINGS_FILE);
+        String settingsFileName = customSettingsPath != null ? customSettingsPath : SETTINGS_FILE;
+        Path settingsPath = Paths.get(settingsFileName);
         if (Files.exists(settingsPath)) {
-            try (Reader reader = new FileReader(SETTINGS_FILE)) {
+            try (Reader reader = new FileReader(settingsFileName)) {
                 Gson gson = new Gson();
-                SettingsData data = gson.fromJson(reader, SettingsData.class);
-                
-                if (data != null && data.window != null) {
-                    this.window = data.window;
+                SettingsData data = gson.fromJson(reader, SettingsData.class);                
+                if (data != null) {
+                    logger.info("User settings loaded successfully from {}", settingsFileName);
+                    if (data.window != null) {
+                        this.window = data.window;
+                        logger.info("Overriding Window settings with user settings.");
+                    }
                     if (data.logLevel != null) {
                         this.logLevel = data.logLevel;
+                        logger.info("Overriding Log Level settings with user settings.");
                     }
                     if (data.display != null) {
                         this.display = data.display;
+                        logger.info("Overriding Display settings with user settings.");
                     }
-                    logger.info("User settings loaded successfully from {}", SETTINGS_FILE);
+                    if (data.world != null) {
+                        this.world = data.world;
+                        logger.info("Overriding World settings with user settings.");
+                    }
                 } else {
                     logger.warn("Invalid user settings format, keeping default settings");
                 }
             } catch (IOException e) {
-                logger.error("Failed to load user settings from {}, using default settings: {}", SETTINGS_FILE, e.getMessage());
+                logger.error("Failed to load user settings from {}, using default settings: {}", settingsFileName, e.getMessage());
             }
         }
     }
@@ -90,9 +111,11 @@ public class Settings {
         this.window.fullscreen = false;
         this.window.width = 1280;
         this.window.height = 720;
-        this.logLevel = "info";
+        this.logLevel = DEFAULT_LOG_LEVEL;
         this.display = new DisplaySettings();
         this.display.showFPS = false;
+        this.world = new WorldSettings();
+        this.world.path = DEFAULT_WORLD_PATH;
     }
     
     public void saveSettings() {
@@ -102,7 +125,7 @@ public class Settings {
             data.window = this.window;
             data.logLevel = this.logLevel;
             data.display = this.display;
-            
+            data.world = this.world;
             gson.toJson(data, writer);
             logger.info("Settings saved to {}", SETTINGS_FILE);
         } catch (IOException e) {
@@ -144,7 +167,7 @@ public class Settings {
     }
     
     public String getLogLevel() {
-        return logLevel != null ? logLevel : "info";
+        return logLevel != null ? logLevel : DEFAULT_LOG_LEVEL;
     }
     
     public void setLogLevel(String logLevel) {
@@ -169,11 +192,22 @@ public class Settings {
         }
     }
     
+    public String getWorldPath() {
+        return world != null ? world.path : DEFAULT_WORLD_PATH;
+    }
+    
+    public void setWorldPath(String worldPath) {
+        if (world != null) {
+            world.path = worldPath;
+        }
+    }
+    
     // Inner classes for JSON serialization
     public static class SettingsData {
         public WindowSettings window;
         public String logLevel;
         public DisplaySettings display;
+        public WorldSettings world;
     }
     
     public static class WindowSettings {
@@ -184,5 +218,9 @@ public class Settings {
     
     public static class DisplaySettings {
         public boolean showFPS;
+    }
+
+    public static class WorldSettings {
+        public String path;
     }
 }

@@ -1,11 +1,14 @@
 {
   "window": {
-    "fullscreen": true,
-    "width": 1920,
-    "height": 1080
+    "fullscreen": false,
+    "width": 1280,
+    "height": 720
   },
-  "logLevel": "info",
+  "logLevel": "error",
   "display": {
     "showFPS": true
+  },
+  "world": {
+    "path": "worlds/demo_world.json"
   }
 }
