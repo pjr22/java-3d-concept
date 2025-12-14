@@ -12,7 +12,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Window {
+public class Window implements IWindow {
     private static final Logger logger = LoggerFactory.getLogger(Window.class);
     private int width = 1280;
     private int height = 720;
@@ -138,10 +138,16 @@ public class Window {
         return windowHandle;
     }
 
+    public String getTitle() {
+        return title;
+    }
+    
+    @Override
     public boolean isFullscreen() {
         return fullscreen;
     }
 
+    @Override
     public void setFullscreen(boolean fullscreen) {
         this.fullscreen = fullscreen;
     }

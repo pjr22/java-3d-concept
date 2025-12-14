@@ -1,5 +1,6 @@
 package com.sim3d.engine;
 
+import com.sim3d.engine.WindowFactory;
 import com.sim3d.graphics.Renderer;
 import com.sim3d.graphics.TextRenderer;
 import com.sim3d.input.InputHandler;
@@ -20,7 +21,7 @@ public class Engine {
     private static final Logger logger = LoggerFactory.getLogger(Engine.class);
 
     private String worldPath;
-    private Window window;
+    private IWindow window;
     private Renderer renderer;
     private TextRenderer textRenderer;
     private InputHandler inputHandler;
@@ -29,6 +30,7 @@ public class Engine {
     private World world;
     private Player player;
     private boolean running;
+    private long windowHandle = -1;
 
     private long lastTime;
     
@@ -61,17 +63,27 @@ public class Engine {
             world = new World("empty", "Empty World");
         }
         
-        window = new Window(world.getName(), settings.getWindowWidth(), settings.getWindowHeight(), settings.isFullscreen());
+        window = WindowFactory.createWindow(world.getName(), settings.getWindowWidth(), settings.getWindowHeight(), settings.isFullscreen());
         window.init();
 
         renderer = new Renderer();
         renderer.init();
 
         inputHandler = new InputHandler();
-        inputHandler.init(window.getWindowHandle());
+        this.windowHandle = window.getWindowHandle();
+        if (this.windowHandle != -1) {
+            inputHandler.init(this.windowHandle);
+        } else {
+            logger.info("Running in framebuffer mode - input handling will be limited");
+            // In framebuffer mode, we can't use GLFW input callbacks
+            // For now, we'll just initialize without a window handle
+            // This will require modifications to InputHandler for full framebuffer support
+        }
 
         mouseInput = new MouseInput();
-        mouseInput.init(window.getWindowHandle());
+        if (this.windowHandle != -1) {
+            mouseInput.init(this.windowHandle);
+        }
 
         menuSystem = new MenuSystem();
         menuSystem.initialize();
@@ -92,7 +104,9 @@ public class Engine {
             logger.warn("No current environment found in world");
         }
 
-        mouseInput.captureMouse();
+        if (windowHandle != -1) {
+            mouseInput.captureMouse();
+        }
 
         lastTime = System.nanoTime();
         running = true;
@@ -109,7 +123,7 @@ public class Engine {
             // Update FPS calculation
             updateFPS(deltaTime);
 
-            glfwPollEvents();
+            window.pollEvents();
             update(deltaTime);
             render();
             window.swapBuffers();
@@ -127,7 +141,9 @@ public class Engine {
                 mouseInput.releaseMouse();
                 logger.info("Menu opened");
             } else {
-                mouseInput.captureMouse();
+                if (windowHandle != -1) {
+                    mouseInput.captureMouse();
+                }
                 logger.info("Menu closed");
             }
         }
@@ -163,7 +179,9 @@ public class Engine {
         switch (option) {
             case 0 -> {
                 menuSystem.hide();
-                mouseInput.captureMouse();
+                if (windowHandle != -1) {
+                    mouseInput.captureMouse();
+                }
                 logger.info("Resuming game");
             }
             case 1 -> {

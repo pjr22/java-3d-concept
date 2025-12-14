@@ -57,6 +57,8 @@ dependencies {
     implementation "org.lwjgl:lwjgl-opengl"
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
     
+
+    
     // STB - image loading
     implementation "org.lwjgl:lwjgl-stb"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"

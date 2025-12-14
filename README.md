@@ -492,104 +492,39 @@ This application can run on Raspberry Pi devices with proper graphics drivers in
 - OpenGL ES 2.0+ compatible graphics drivers
 - At least 1GB of available RAM
 
-### Installing Graphics Drivers
+### Complete Raspberry Pi 5 Setup Guide
 
-#### Check Current OpenGL Support
+For detailed, up-to-date Raspberry Pi 5 setup instructions, please refer to the comprehensive guide:
 
-First, check what OpenGL drivers are currently installed:
+📖 **[Raspberry Pi 5 Setup Guide](Raspberry_Pi_Setup.md)**
 
+This guide includes:
+- ✅ Correct GPU driver installation for Raspberry Pi 5
+- ✅ Framebuffer configuration for headless operation
+- ✅ Performance optimization tips
+- ✅ Troubleshooting for common issues
+- ✅ LWJGL integration guidance
+- ✅ Testing and verification steps
+
+### Key Raspberry Pi 5 Notes
+
+**Important**: Raspberry Pi 5 uses VideoCore VII GPU but still uses the `vc4` driver, not `vc5`. Do not use `vc5` overlays as they don't exist in standard Raspberry Pi OS.
+
+**Dynamic Memory Allocation**: Raspberry Pi 5 supports dynamic GPU memory allocation, making the `gpu_mem` parameter unnecessary. The system automatically manages GPU memory based on application needs.
+
+**Recommended Configuration**:
 ```bash
-# Check OpenGL version and renderer
-glxinfo | grep -E "OpenGL version|OpenGL renderer"
-```
+# Use the standard vc4-kms-v3d overlay with CMA memory
+dtoverlay=vc4-kms-v3d,cma-512
 
-If glxinfo isn't installed:
-```bash
-# Install mesa-utils if not already present
-sudo apt update
-sudo apt install mesa-utils
-```
-
-For Raspberry Pi 5 specific information:
-```bash
-# Check for VC6/V7 firmware (Pi 5 uses VC6)
-vcgencmd version
-```
-
-#### Install Proprietary Broadcom Drivers
-
-For Raspberry Pi 5, you'll want to use the proprietary drivers for best performance:
-
-```bash
-# Update package lists
-sudo apt update
-
-# Install the full proprietary driver stack
-sudo apt install libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0
-
-# Install OpenGL ES libraries
-sudo apt install libgles2-mesa-dev
-
-# Install additional graphics libraries
-sudo apt install libegl1-mesa-dev libgbm1 libgl1-mesa-dev
-
-# Install firmware updates
-sudo apt install raspberrypi-bootloader
-```
-
-#### Configure for Maximum Performance
-
-Edit the boot configuration:
-```bash
-sudo nano /boot/firmware/config.txt
-```
-
-Add or ensure these lines are present:
-```
-# Enable DRM/KMS (Direct Rendering Manager/Kernel Mode Setting)
-dtoverlay=vc4-kms-v3d
-
-# GPU memory allocation (adjust based on your needs)
-gpu_mem=128
-
-# Enable 64-bit mode if not already enabled
+# Enable 64-bit mode
 arm_64bit=1
-```
-
-#### Verify Installation
-
-After installation and reboot:
-```bash
-# Reboot to apply changes
-sudo reboot
-
-# After reboot, verify OpenGL ES support
-es2_info
-```
-
-#### Additional Java-Specific Requirements
-
-Since you're running a Java application with LWJGL, you may also need:
-```bash
-# Install additional libraries that LWJGL might need
-sudo apt install libxrandr2 libxinerama1 libxi6 libxcursor1 libxcomposite1 libasound2-dev
-```
-
-#### Performance Testing
-
-To test if the drivers are working properly before running the Java application:
-```bash
-# Install a simple OpenGL ES test
-sudo apt install glmark2-es2-wayland
-
-# Run the benchmark
-glmark2-es2-wayland
 ```
 
 ### Running on Raspberry Pi
 
-1. Build the application on the Raspberry Pi or transfer the built JAR file
-2. Ensure the settings.json file is configured for fullscreen mode (default)
+1. Follow the complete setup guide: [Raspberry Pi 5 Setup Guide](Raspberry_Pi_Setup.md)
+2. Build the application on the Raspberry Pi or transfer the built JAR file
 3. Run the application:
    ```bash
    java -jar build/libs/java_3d_concept.jar
@@ -599,15 +534,11 @@ The application should launch in fullscreen mode directly on the framebuffer, by
 
 ### Troubleshooting
 
-If you encounter any issues with the proprietary drivers, you can fall back to the open-source Mesa drivers:
-```bash
-sudo apt install mesa-utils-extra libgl1-mesa-dri
-```
-
-For performance issues, consider:
-- Increasing GPU memory allocation in config.txt
-- Ensuring the Raspberry Pi is properly cooled
-- Using a high-quality power supply
+For any issues, refer to the comprehensive troubleshooting section in the [Raspberry Pi 5 Setup Guide](Raspberry_Pi_Setup.md) which covers:
+- GPU driver configuration issues
+- Framebuffer problems
+- Performance optimization
+- Common error messages and solutions
 
 ## Dependencies
 

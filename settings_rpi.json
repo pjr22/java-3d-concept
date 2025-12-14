@@ -4,11 +4,12 @@
     "width": 1280,
     "height": 720
   },
-  "logLevel": "error",
+  "logLevel": "info",
   "display": {
     "showFPS": true
   },
-  "world": {
-    "path": "worlds/demo_world.json"
+  "raspberryPi": {
+    "useFramebuffer": true,
+    "framebufferDevice": "/dev/fb0"
   }
 }

@@ -25,6 +25,7 @@ public class Settings {
     private String logLevel;
     private DisplaySettings display;
     private WorldSettings world;
+    private RaspberryPiSettings raspberryPi;
     
     private Settings() {
         // Private constructor for singleton
@@ -97,6 +98,10 @@ public class Settings {
                         this.world = data.world;
                         logger.info("Overriding World settings with user settings.");
                     }
+                    if (data.raspberryPi != null) {
+                        this.raspberryPi = data.raspberryPi;
+                        logger.info("Overriding Raspberry Pi settings with user settings.");
+                    }
                 } else {
                     logger.warn("Invalid user settings format, keeping default settings");
                 }
@@ -116,6 +121,9 @@ public class Settings {
         this.display.showFPS = false;
         this.world = new WorldSettings();
         this.world.path = DEFAULT_WORLD_PATH;
+        this.raspberryPi = new RaspberryPiSettings();
+        this.raspberryPi.useFramebuffer = false;
+        this.raspberryPi.framebufferDevice = "/dev/fb0";
     }
     
     public void saveSettings() {
@@ -208,6 +216,7 @@ public class Settings {
         public String logLevel;
         public DisplaySettings display;
         public WorldSettings world;
+        public RaspberryPiSettings raspberryPi;
     }
     
     public static class WindowSettings {
@@ -222,5 +231,38 @@ public class Settings {
 
     public static class WorldSettings {
         public String path;
+    }
+
+    public static class RaspberryPiSettings {
+        public boolean useFramebuffer;
+        public String framebufferDevice;
+    }
+
+    public RaspberryPiSettings getRaspberryPi() {
+        return raspberryPi != null ? raspberryPi : new RaspberryPiSettings();
+    }
+
+    public void setRaspberryPi(RaspberryPiSettings raspberryPi) {
+        this.raspberryPi = raspberryPi;
+    }
+
+    public boolean isRaspberryPiFramebuffer() {
+        return raspberryPi != null && raspberryPi.useFramebuffer;
+    }
+
+    public void setRaspberryPiFramebuffer(boolean useFramebuffer) {
+        if (raspberryPi != null) {
+            raspberryPi.useFramebuffer = useFramebuffer;
+        }
+    }
+
+    public String getFramebufferDevice() {
+        return raspberryPi != null ? raspberryPi.framebufferDevice : "/dev/fb0";
+    }
+
+    public void setFramebufferDevice(String framebufferDevice) {
+        if (raspberryPi != null) {
+            raspberryPi.framebufferDevice = framebufferDevice;
+        }
     }
 }
